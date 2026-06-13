@@ -7,6 +7,17 @@ Target: submit all 8 deliverables on Devpost by **2026-06-15, 11:45pm EDT**.
 
 ---
 
+## ⚠️ Top priority — this run is elimination insurance, not polish
+
+The judge rubric's Stage One disqualification screen flags submissions with **"no real case
+data analyzed."** Our corpus is synthetic until this run, so the SANS-image graded pass is what
+clears that flag. Treat it as the **single most important Mac task** — above the video, above
+cosmetics. If time gets tight, get one clean run against the real SANS starter image (Steps 5–7)
+before anything else: it converts the project from "tested on synthetic data" to "analyzed real
+case evidence," and it's the difference between qualifying and being cut at Stage One.
+
+---
+
 ## 0. Pre-flight — have these ready before you start
 - [ ] SIFT Workstation OVA imported and booted (VMware/VirtualBox), with **internet** in the guest.
 - [ ] An **Anthropic login / API key** for Claude Code (Protocol SIFT installs the `claude`
