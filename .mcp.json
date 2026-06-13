@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "iocflow": {
+      "command": "iocflow-mcp",
+      "args": [],
+      "env": {}
+    }
+  }
+}

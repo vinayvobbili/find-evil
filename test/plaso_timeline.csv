@@ -1,0 +1,5 @@
+datetime,timestamp_desc,source,source_long,message,parser,display_name,tag
+2026-03-14T08:42:11+00:00,Content Modification Time,FILE,NTFS USN change,install.ps1 MD5 a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4 written to C:\Users\jdoe\AppData\Local\Temp\install.ps1,filestat,TSK:/Users/jdoe/AppData/Local/Temp/install.ps1,
+2026-03-14T08:42:39+00:00,Last Time Executed,REG,Registry Key,UserAssist: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -enc SQBFAFgA...,winreg/userassist,HKCU,
+2026-03-14T08:43:02+00:00,Creation Time,WEBHIST,Chrome History,Visited http://evil-domain[.]ru/payload returned 200,chrome_history,Chrome,
+2026-03-14T08:45:55+00:00,Last Access Time,LOG,Windows Defender,Threat Cobalt Strike beacon detected contacting 185.220.101.5:443,winevtx,Microsoft-Windows-Windows Defender/Operational,

@@ -1,0 +1,5 @@
+Volatility 3 Framework 2.7.0
+Offset      Proto    LocalAddr        LocalPort  ForeignAddr        ForeignPort  State        PID   Owner
+0xc8a1f020  TCPv4    10.0.0.55        49712      185.220.101.5      443          ESTABLISHED  4812  powershell.exe
+0xc8a2b140  TCPv4    10.0.0.55        49713      45.142.212.61      8080         ESTABLISHED  4812  rundll32.exe
+0xc8a3c260  TCPv4    10.0.0.55        49714      cobalt-c2[.]net    443          CLOSE_WAIT   4812  rundll32.exe

