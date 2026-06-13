@@ -40,6 +40,14 @@ reconciliation on screen:
 extractor, compares, and corrects itself: two wrong values fixed, a benign LOLBin
 reclassified, eight missed indicators recovered. Zero hallucinated indicators survive."
 
+## Scene 3b — Cross-source corroboration (depth) (optional, ~15s)
+**On screen:** point out one confirmed indicator that appears in **both** the memory capture
+(Volatility strings/netscan) and the disk timeline (plaso) — and, if one exists, one that
+appears in only a single source.
+**Narration:** "Depth over breadth: the same indicator corroborated across memory and disk is
+stronger than either alone — and a memory-only artifact missing from the on-disk timeline is a
+discrepancy we flag, not smooth over." *(Cut if timing is tight; it reinforces criterion 3.)*
+
 ## Scene 4 — From findings to action (2:50–3:40)
 **On screen:** agent calls `mcp__iocflow__suggest_hunts` → show generated Sigma / Cortex XQL
 / CrowdStrike CQL sweeps ("were we touched elsewhere?"). Then `propose_blocks` → show it's a
