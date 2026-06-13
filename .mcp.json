@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "iocflow": {
-      "command": "iocflow-mcp",
-      "args": [],
+      "command": "python3",
+      "args": ["-m", "iocflow.mcp"],
       "env": {}
     },
     "domainflow-pivot": {

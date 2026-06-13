@@ -35,7 +35,8 @@ fi
 echo "[find-evil] registering iocflow MCP server with Claude Code ..."
 # Prefer the CLI so it merges cleanly with protocol-sift's own config.
 if command -v claude >/dev/null 2>&1; then
-  claude mcp add iocflow -- iocflow-mcp 2>/dev/null \
+  # python3 -m ... resolves regardless of whether ~/.local/bin is on PATH at runtime.
+  claude mcp add iocflow -- python3 -m iocflow.mcp 2>/dev/null \
     || echo "[find-evil] 'iocflow' MCP server already registered — skipping"
   claude mcp add domainflow-pivot -- python3 "$PIVOT_DIR/server.py" 2>/dev/null \
     || echo "[find-evil] 'domainflow-pivot' MCP server already registered — skipping"
@@ -43,7 +44,7 @@ else
   echo "[find-evil] 'claude' CLI not found; writing $CLAUDE_DIR/.mcp.json"
   cat > "$CLAUDE_DIR/.mcp.json" <<JSON
 { "mcpServers": {
-  "iocflow": { "command": "iocflow-mcp", "args": [], "env": {} },
+  "iocflow": { "command": "python3", "args": ["-m", "iocflow.mcp"], "env": {} },
   "domainflow-pivot": { "command": "python3", "args": ["$PIVOT_DIR/server.py"], "env": {} }
 } }
 JSON
