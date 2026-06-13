@@ -48,7 +48,16 @@ reclassified, eight missed indicators recovered. Zero hallucinated indicators su
 a dry-run containment plan a human approves. The block never fires from the agent — that
 verb doesn't exist as a tool."
 
-## Scene 5 — Audit trail & integrity (3:40–4:20)
+## Scene 4b — Actor pivot (optional, only if case is phishing/domain-driven) (3:40–4:00)
+**On screen:** agent calls `mcp__domainflow-pivot__cluster_actor_infrastructure` on the
+extracted domains. Show it either cluster them into one actor campaign, **or** (more
+powerfully) return *no cluster* and the agent explaining it won't fabricate an infrastructure
+link absent shared pivots.
+**Narration:** "Optional breadth: pivot the extracted domains into the actor's wider campaign
+— and notice it only links on real shared infrastructure, never a guess."
+*(If the demo runs long or the case isn't domain-driven, cut this scene — it's secondary.)*
+
+## Scene 5 — Audit trail & integrity (4:00–4:20)
 **On screen:** open `test/sample_execution_log.jsonl` (or the live run's log); highlight a
 finding and trace it to the exact `mcp__iocflow__extract_iocs` call. Then re-hash the
 evidence image and show the SHA256 is **unchanged**.

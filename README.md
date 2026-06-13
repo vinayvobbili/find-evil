@@ -42,7 +42,10 @@ Agent reconciles raw-read findings vs. extractor → corrects / flags hallucinat
 - `skills/ioc-lifecycle/SKILL.md` — the 6th Protocol SIFT skill: when a forensic tool
   emits text, extract → reconcile (self-correct) → hunt, instead of asserting by eye.
 - `install.sh` — idempotent bolt-on; run after Protocol SIFT's own installer.
-- `test/` — sample SIFT tool outputs and a real agent execution log (below).
+- `mcp_pivot/server.py` — *optional* secondary MCP server: one `cluster_actor_infrastructure`
+  tool over [`domainflow`](https://github.com/vinayvobbili/domainflow) that pivots extracted
+  domains into an actor's campaign by shared infrastructure (correlation breadth).
+- `test/` — sample SIFT tool outputs and real agent execution logs (below).
 
 ## Install (on the SIFT Workstation)
 
@@ -75,6 +78,19 @@ claude -p "Extract and reconcile the IOCs in this dump: $(cat test/volatility_st
   --allowedTools mcp__iocflow__extract_iocs mcp__iocflow__suggest_hunts
 ```
 
+## Optional: actor-infrastructure pivot
+
+A second, secondary MCP server (`domainflow-pivot`) adds correlation breadth. After the agent
+extracts domains from evidence, it can cluster them into an actor's campaign by *shared,
+discriminating* infrastructure. In a real chained run (`test/sample_pivot_log.jsonl`), the
+agent called `extract_iocs` then `cluster_actor_infrastructure` — and when the two C2 domains
+had different IPs and no shared registrant, it **refused to fabricate a campaign link**,
+distinguished host-side co-occurrence (same host/PID) from infrastructure linkage, and
+recommended enriching first. Same anti-hallucination discipline, applied to correlation.
+
+This layer is optional and clearly secondary to the iocflow core; drop it if a case isn't
+domain/phishing-driven.
+
 ## License
 
-MIT. Built on `iocflow` (MIT) by the same author.
+MIT. Built on `iocflow` and `domainflow` (both MIT) by the same author.

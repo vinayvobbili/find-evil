@@ -43,6 +43,24 @@ all `validated: true`, across ip/domain/url/filename/sha256.
 
 ---
 
+## 2b. Results — actor-pivot correlation (optional layer)
+
+Chained run (`test/sample_pivot_log.jsonl`): the agent called `extract_iocs`, then built
+findings from the extracted domains/IPs and called `cluster_actor_infrastructure`.
+
+- The two C2 domains (`evil-domain.ru` @ 185.220.101.5, `cobalt-c2.net` @ 45.142.212.61) had
+  **no shared discriminating pivot** in the raw dump → the tool returned 0 campaigns.
+- The agent **did not fabricate** an infrastructure link. It explicitly separated *host-side
+  co-occurrence* (same host 10.0.0.55, same PID 4812 = same intrusion) from *infrastructure
+  linkage* (the narrower question clustering answers), and recommended enriching
+  registrant/nameservers before re-clustering.
+- Control check (direct unit call, shared IP + registrant present): clustering correctly
+  groups 3 actor domains into one campaign and **excludes** an unrelated Cloudflare domain
+  (suppresses the too-common pivot) — i.e. it neither over-groups nor under-groups.
+
+This is the anti-hallucination thesis holding in the correlation layer: a negative result is
+reported as negative, not dressed up as a finding.
+
 ## 3. Known false-positive classes (documented, not hidden)
 
 - **LOLBin filenames.** `extract_iocs` surfaces `powershell.exe`, `rundll32.exe`, etc. under

@@ -47,9 +47,17 @@ extractor over your own read.
    - Defanged/mangled values → use the extractor's canonical (re-fanged) form.
 5. Call `suggest_hunts` to produce the lateral "were we touched?" queries for the
    confirmed set.
-6. (Optional) `assess_indicators` for a severity + narrative; `propose_blocks` for a
+6. (Optional — actor pivot.) If you extracted **domains** (C2 / phishing), and especially if
+   the case looks like brand impersonation, build a JSON array of finding objects
+   (`{"domain": ..., "ip_addresses": [...], "registrant_org": ..., "nameservers": [...]}`)
+   from what you know and call `mcp__domainflow-pivot__cluster_actor_infrastructure`. It
+   clusters domains into one actor's campaign **only on discriminating shared infrastructure**.
+   If it returns no cluster, do **not** invent a link — say so, and note that host-side
+   co-occurrence (same host/PID) is a separate, valid linkage from infrastructure linkage.
+   Enrich first (registrant/nameservers) and re-run if you need an infrastructure-based answer.
+7. (Optional) `assess_indicators` for a severity + narrative; `propose_blocks` for a
    dry-run containment plan to hand a human.
-7. Cite every reported indicator back to the tool execution whose text produced it.
+8. Cite every reported indicator back to the tool execution whose text produced it.
 
 ## False Positive Testing
 Before finalizing, re-run `extract_iocs` on a slice of known-benign output from the same
