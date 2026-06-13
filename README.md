@@ -15,6 +15,8 @@ correcting its hallucinations before they reach the report.
 
 ## Architecture
 
+![find-evil architecture](docs/architecture.png)
+
 ```
 SIFT forensic tool (plaso / Volatility / YARA / Sleuth Kit)
         │  raw text dump

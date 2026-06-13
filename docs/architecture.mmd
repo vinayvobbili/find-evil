@@ -1,0 +1,44 @@
+%% Editable source for docs/architecture.png (render with mermaid-cli: mmdc -i architecture.mmd -o architecture.png)
+%% Pattern: Direct Agent Extension (Claude Code) + Custom MCP Server
+flowchart LR
+  subgraph SRC["Evidence / case data (read-only originals)"]
+    D1[Disk images]
+    D2[Memory captures]
+    D3[Log files]
+    D4[Network captures]
+    D5[Remote endpoints]
+  end
+
+  subgraph TOOLS["SIFT forensic tools (200+ CLIs)"]
+    T1[Plaso / log2timeline]
+    T2[Volatility 3]
+    T3[Sleuth Kit / EZ Tools]
+    T4[YARA]
+  end
+
+  AGENT["Protocol SIFT<br/>= Claude Code agent<br/>baseline: eyeballs dumps -> hallucinates<br/>find-evil: calls MCP, then reconciles"]
+
+  subgraph MCP["iocflow MCP server (typed, stdio) -- ARCHITECTURAL boundary"]
+    M1["extract_iocs() — re-fang · PSL · hash-dedup · LOLBin-aware"]
+    M2["enrich_indicators() — VT · AbuseIPDB · abuse.ch"]
+    M3["assess_indicators() — severity · narrative"]
+    M4["suggest_hunts() — CQL · XQL · Sigma"]
+    M5["propose_blocks() — DRY-RUN only (no execute path)"]
+    M6["to_stix / from_stix — STIX 2.1"]
+  end
+
+  RECON["Self-correction:<br/>reconcile eyeballed vs extractor ground truth<br/>correct values · flag hallucinations · add misses"]
+
+  subgraph OUT["Output pipeline"]
+    O1[Reconciled IOC report: confirmed / corrected / unverified]
+    O2[Hunt queries: were we touched elsewhere?]
+    O3[Dry-run block plan -> human approval]
+  end
+
+  SRC --> TOOLS --> AGENT
+  AGENT -- raw text --> MCP
+  MCP -- structured IOCs --> AGENT
+  AGENT --> RECON --> OUT
+
+  classDef arch fill:#eafaf1,stroke:#00A651,stroke-width:2px;
+  class MCP arch
