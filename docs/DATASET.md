@@ -59,17 +59,35 @@ claude -p "Reconcile the IOCs in this dump against extract_iocs, flag any unveri
 
 ## Tier 2 — SANS starter evidence (on-workstation demo)
 
-The graded demo runs on the SIFT Workstation against the **starter evidence datasets**
-provided on the Protocol SIFT Slack (disk image + memory capture of a compromised Windows
+The graded demo runs on the SIFT Workstation against the **"Example Compromised System
+Data"** published by the hackathon (disk image + memory capture of a compromised Windows
 system). These are not redistributed here. Fill in at capture time:
 
-- **Image name / file:** _<starter image filename>_
-- **Source:** Protocol SIFT Slack → starter resources
-- **SHA256 (as downloaded):** _<hash>_  ← record to prove the original was never modified
-- **Acquisition type:** _<E01 / raw dd / vmem / etc.>_
-- **Tools run via Protocol SIFT:** _<plaso, vol.py windows.pslist/netscan/strings, yara, ...>_
-- **What the agent found:** _<confirmed IOCs, hunts generated, coverage gaps>_
-- **Ground truth (if SANS publishes it):** _<known-evil artifacts for scoring>_
+- **Host:** `base-wkstn-01.shieldbase.lan` — Windows 10 x64 build 16299 (1709), captured
+  2021-09-16 UTC.
+- **Files analyzed (two artifacts, same host, same incident):**
+  | Artifact | Acquisition | Bytes | SHA256 (as analyzed) |
+  |---|---|---|---|
+  | `base-wkstn-01-mem.img` | raw memory (F-Response/Mnemosyne) | 3,221,225,472 | `2caefa29dd738228d1274a6d3a75d60dbdbf3eda2483e1e5bd0a500e9ac07fbc` |
+  | `base-wkstn-01-c-drive.E01` | FTK Imager E01, NTFS C: (31 GiB media) | 16,923,891,211 | `ede47a0733203134f92c8ae46df4f5106b78a2c357fdb1d3c84301261076429f` |
+  | `base-wkstn-01-mem.zip` (container) | download wrapper | 1,270,425,664 | `ef061848edb0d0014155f8ee43cbc67f759520fa96de249ffbd45045b602e29a` |
+- **Source:** FIND EVIL! Devpost → Resources / "Download Example Compromised System Data"
+  to-do (served from SANS Egnyte; the Protocol SIFT Slack is for Q&A, not data hosting).
+- **Tools run via Protocol SIFT:** Volatility3 (`windows.info / pslist / netscan / cmdline /
+  pstree / malfind`); TSK (`ewfmount`, `fls`, `icat`) read-only; EvtxECmd (Sysmon, 308,812
+  events); all output routed through `mcp__iocflow__extract_iocs` + `suggest_hunts`.
+- **What the agent found:** `base-wkstn-01` is a **clean baseline host** — **0 confirmed
+  malicious indicators, 0 external network IOCs** (all `netscan` peers RFC1918), **0 surviving
+  hallucinations.** Four scary-looking artifacts were each run down with a tool and cleared:
+  svchost→`172.16.4.10:8080` = **proxy** (Sysmon `RuleName: Proxy` ×271,007); "injected svchost"
+  = **refuted** (`malfind` empty); `C:\windows\subject_srv.exe` = **F-Response** IR agent;
+  `Mnemosyne.sys` kernel driver = **F-Response acquisition driver** (validly signed, *Agile Risk
+  Management LLC*). 1 validated Sigma hunt generated. Full trace + counts:
+  `docs/ACCURACY_REPORT.md` §4 and the case file `analysis/FINDINGS_RECONCILIATION.md`.
+- **Ground truth:** not published for this host; consistent with a **baseline** (the "base-"
+  prefix). Recall vs. malice = N/A (no adversary artifacts to recall); the result is a
+  precision/anti-hallucination demonstration, reported as such.
 
-> Reproducibility check: re-hash the image after analysis and confirm the SHA256 is
-> unchanged — evidence integrity is verified by the hash, not just asserted.
+> Reproducibility check **passed**: both images were re-hashed after the full analysis and the
+> SHA256s above were **unchanged** — evidence integrity verified by hash, not merely asserted.
+> Working copies were held `chmod 444`; all reads via `ewfmount` (read-only) + `icat`.

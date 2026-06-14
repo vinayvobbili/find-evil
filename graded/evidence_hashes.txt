@@ -1,0 +1,7 @@
+# Chain of custody — recorded 2026-06-14T04:04:58Z UTC
+## container (as downloaded from SANS Egnyte):
+ef061848edb0d0014155f8ee43cbc67f759520fa96de249ffbd45045b602e29a  base-wkstn-01-mem.zip
+## evidence artifact (analyzed; must be unchanged at end):
+2caefa29dd738228d1274a6d3a75d60dbdbf3eda2483e1e5bd0a500e9ac07fbc  base-wkstn-01-mem.img
+## disk image (analyzed; must be unchanged at end):
+ede47a0733203134f92c8ae46df4f5106b78a2c357fdb1d3c84301261076429f  base-wkstn-01-c-drive.E01

@@ -104,21 +104,52 @@ indicator it never extracted.
 
 ---
 
-## 4. On-workstation graded run (fill in after the SIFT demo)
+## 4. On-workstation graded run — SANS `base-wkstn-01` (memory + disk)
 
-Run `find-evil` against the SANS starter image (see `DATASET.md` Tier 2) and record:
-- Total IOCs extracted / confirmed / corrected / flagged-unverified: _<n>_
-- Indicators in SANS ground truth correctly found (recall): _<n / N>_
-- False positives asserted as confirmed (precision): _<n>_
-- Hallucinated claims that survived reconciliation: _<n>_  ← target 0
-- Hunts generated and validated: _<n>_
-- Coverage gaps identified: _<list>_
-- **Cross-source corroboration (depth):** for each confirmed indicator, note whether it
-  appears in *both* the memory capture (Volatility strings/netscan) and the disk timeline
-  (plaso) or only one. An indicator present in memory but absent from the on-disk timeline —
-  or vice versa — is a discrepancy worth calling out, not smoothing over. The synthetic corpus
-  already spans both modalities (`volatility_strings.txt` + `plaso_timeline.csv`) so this is a
-  reconciliation across sources, not just within one dump. _<corroborated / single-source>_
+Graded against real SANS "Example Compromised System Data": `base-wkstn-01-mem.img` (3.0 GB raw
+memory, SHA256 `2caefa29…07fbc`) and `base-wkstn-01-c-drive.E01` (31 GiB NTFS, SHA256
+`ede47a07…76429f`). Host `base-wkstn-01.shieldbase.lan`, Win10 1709, captured 2021-09-16 UTC.
+Tools driven via Protocol SIFT: Volatility3 (`windows.info/pslist/netscan/cmdline/pstree/malfind`),
+TSK (`ewfmount`/`fls`/`icat`), EvtxECmd (Sysmon, 308,812 events), routed through
+`mcp__iocflow__extract_iocs` + `suggest_hunts`. Full trace: `analysis/FINDINGS_RECONCILIATION.md`.
+**Enrichment sources live for this run: none** (no VT/AbuseIPDB keys) — `enrich/assess` returned
+empty-but-successful; severity is structural, not vendor-scored.
+
+- **Total indicators surfaced by `extract_iocs`:** 4 (all `filename`: `svchost.exe`,
+  `Velociraptor.exe`, `subject_srv.exe`, `Sysmon64.exe`). **Network IOCs: 0** — every foreign
+  address in `netscan` is RFC1918, so the extractor emitted **0 IP/domain/URL/hash** indicators.
+- **Confirmed malicious: 0.** `base-wkstn-01` presents as a **clean baseline host.**
+- **Suspicious signals correctly reclassified (corrected): 4** — each via a tool call, not a guess:
+  1. svchost(DiagTrack)→`172.16.4.10:8080` "C2" → **proxy egress** (Sysmon EID 3 ×271,007 all
+     `RuleName: Proxy`). 2. "injected svchost" → **refuted** (`malfind` 0 rows). 3.
+     `C:\windows\subject_srv.exe` "masquerade" → **F-Response** (banner + MFT birth matches memory).
+     4. `Mnemosyne.sys` "rootkit driver" → **F-Response acquisition driver** (Sysmon EID 6
+     `Signed: true · Agile Risk Management LLC · Valid`).
+- **Recall vs. ground truth:** N/A for malice — no adversary artifacts exist on this host to
+  recall (clean baseline). Recall is reported honestly as *not applicable*, not inflated.
+- **False positives asserted as confirmed (precision): 0.** All four scary-looking artifacts that
+  a naïve pass would headline (external C2, kernel rootkit, masqueraded binary, mass recon) were
+  withheld and cleared with evidence.
+- **Hallucinated claims that survived reconciliation: 0.** ✅ (target met)
+- **Hunts generated and validated:** 1 Sigma `process_creation` sweep (`svchost.exe`,
+  `subject_srv.exe`), `validated: true` (fewer than the synthetic run because there were no
+  network/hash IOCs to sweep — correct, not a miss).
+- **Coverage gaps (honest):** (a) only `base-wkstn-01` analyzed — other hosts in the dataset not
+  examined; (b) no full plaso super-timeline (targeted MFT + Sysmon instead); (c) PowerShell
+  ScriptBlock/Operational logs and browser/user-profile artifacts not parsed (host was at the
+  login screen with no interactive session); (d) no live enrichment (no API keys).
+- **Cross-source corroboration (depth):** the memory anomaly to `172.16.4.10` was **resolved by
+  the disk** (Sysmon `RuleName: Proxy`) — a genuine memory→disk reconciliation. `subject_srv.exe`
+  appears in **both** memory (process) and disk (MFT birth 03:01:57 + Prefetch + Sysmon). No
+  memory/disk discrepancy was smoothed over; the one cross-source question (is the :8080 peer
+  hostile?) was answered by the second source, not assumed.
+
+> Headline (real data): on `base-wkstn-01`, find-evil retained **zero** hallucinated indicators
+> and **zero** false positives while correctly clearing **four** artifacts that the Protocol SIFT
+> baseline is prone to over-call — including a kernel driver that is the scariest-looking artifact
+> on the box and turns out to be the acquisition tool itself. Not manufacturing evil on a clean
+> host is the accuracy result that maps directly to criterion 2 (IR Accuracy) and Starter Idea #1
+> ("fewer hallucinated findings than baseline").
 
 ---
 

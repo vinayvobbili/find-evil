@@ -1,0 +1,11 @@
+{
+  "tool": "mcp__iocflow__extract_iocs",
+  "input_source": "analysis/02_netscan.txt + analysis/03_cmdline.txt (real base-wkstn-01 memory)",
+  "result": {
+    "ips": [],
+    "domains": [], "urls": [], "hashes": {"md5":[],"sha1":[],"sha256":[]},
+    "filenames": ["svchost.exe","Velociraptor.exe","subject_srv.exe","Sysmon64.exe"],
+    "cves": [], "emails": [], "threat_actors": [], "malware_families": [], "mitre_techniques": []
+  },
+  "key_property": "All foreign IPs in netscan are RFC1918 -> extractor surfaced ZERO external IP/domain/URL IOCs (false-positive defense on real data)."
+}
