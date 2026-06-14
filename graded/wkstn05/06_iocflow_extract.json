@@ -1,0 +1,6 @@
+{ "tool":"mcp__iocflow__extract_iocs","host":"base-wkstn-05 (172.16.7.15)",
+  "domains":["www.venetodns.trade","stark-research-labs.com"],
+  "urls":["http://www.venetodns.trade/dtsbze/vidc4959xfzbmzgj/.png"],
+  "filenames":["WmiPrvSE.exe","powershell.exe","rundll32.exe"],
+  "mitre":["T1047","T1059.001","T1218.011"], "ips":[],
+  "note":"venetodns.trade = CONFIRMED C2 (in Empire stager). stark-research-labs.com = victim org (benign). Internal IPs filtered. propose_blocks dry_run:true, results:[]. cluster: 0 campaigns (no fabricated linkage)." }

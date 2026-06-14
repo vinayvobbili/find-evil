@@ -153,6 +153,52 @@ empty-but-successful; severity is structural, not vendor-scored.
 
 ---
 
+## 4b. On-workstation graded run — SANS `base-wkstn-05` (COMPROMISED host)
+
+Second graded host from the SRL-2018 "Compromised Enterprise Network": `base-wkstn-05-memory.img`
+(3.0 GB raw, dc3dd; bundled MD5 `bb6df5c0…c4fe0` **verified**; SHA256 `74ff679b…436115`) +
+`base-wkstn-05-cdrive.E01` (29 GiB NTFS; SHA256 `a94f2a86…0a65e0`). Win7 SP1 x64,
+`172.16.7.15` / `shieldbase.lan`, captured 2018-09-06. Full trace:
+`analysis/wkstn05/FINDINGS_RECONCILIATION.md` (mirrored in `graded/wkstn05/`).
+
+*Tooling note:* Vol3 list-walking plugins returned empty on this image (a Win7/symbol quirk; all
+57 processes absent from the active list, not selective DKOM). Investigation used pool-scanners
+(`psscan`, `netscan`) + raw-image carving + disk Sysmon/PowerShell logs — every finding still
+traces to a specific tool call.
+
+- **Evil FOUND (confirmed):** APT chain `WmiPrvSE → powershell → powershell → rundll32` (`psscan`),
+  a fileless **PowerShell Empire gzip-base64 stager** (raw memory), and external C2
+  **`www.venetodns.trade`** (`/dtsbze/vidc4959xfzbmzgj/.png`) → `extract_iocs` surfaced domain +
+  URL + ATT&CK **T1047 / T1059.001 / T1218.011**. Disk Sysmon confirmed the vector: PSRemoting
+  (`wsmprovhost`) under a stolen SQL service account `shieldbase\spsql`, plus Empire injection
+  IOCs (CreateRemoteThread ×75, named pipes ×5,445).
+- **Confirmed indicators:** 1 external C2 domain + 1 C2 URL + 3 ATT&CK techniques + the host chain.
+- **The self-correction (genuine):** `netscan` showed **only internal** peers (proxy `…4.10:8080`,
+  `…4.6:443`) → eyeball "no external C2." Wrong — the C2 egresses **through the proxy**, so it lives
+  in the PowerShell command, not the connection table; `extract_iocs` recovered it. Memory→tool
+  correction, captured live in the demo.
+- **False positives asserted as confirmed: 0.** Memory held **15 suspicious domains**; only
+  `venetodns.trade` (in the stager) was reported as C2 — the 14 others (diet-spam `.trade`,
+  `mail.ru`/`yandex.ru`/`inbox.ru` from the user's Outlook, uniform-count `.info/.cc`) were held as
+  unverified/benign. Disk: the 12,406 `WebClient` ScriptBlock hits were **not** blanket-flagged —
+  many are *defender* PowerShell (downloading `sysmon-config`, `Sysmon64.exe`).
+- **Hallucinated claims surviving reconciliation: 0.** `cluster_actor_infrastructure` → **0
+  campaigns** (no fabricated actor linkage); `propose_blocks` → **`dry_run: true`** (no execute verb).
+- **Hunts generated and validated:** Sigma domain sweep (`venetodns.trade`) + proxy-URL sweep, both
+  `validated: true`.
+- **Cross-source corroboration (depth):** memory **found** the evil; disk **explained the how**
+  (PSRemoting + `spsql` + Empire IOCs) — and honestly noted `venetodns.trade` does *not* appear in
+  the disk logs (Win7 Sysmon has no DNS event), so the C2 stays attributed to its true source
+  rather than overclaimed across both.
+
+> Headline (two hosts): on the **compromised** host find-evil **found the evil** — full kill chain
+> + external C2 hidden behind the proxy — while reporting **1 of 15** domains as C2 and fabricating
+> **no** actor cluster; on the **clean** host it manufactured **nothing**. Find evil where it is;
+> refuse to invent it where it isn't. (Criteria 1, 2, 3, 4, 5 — execution, accuracy, depth,
+> constraints, audit trail.)
+
+---
+
 ## 5. Evidence integrity & spoliation testing
 
 **How the architecture prevents original-data modification — architectural, not prompt-based:**

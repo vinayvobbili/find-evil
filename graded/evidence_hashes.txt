@@ -5,3 +5,7 @@ ef061848edb0d0014155f8ee43cbc67f759520fa96de249ffbd45045b602e29a  base-wkstn-01-
 2caefa29dd738228d1274a6d3a75d60dbdbf3eda2483e1e5bd0a500e9ac07fbc  base-wkstn-01-mem.img
 ## disk image (analyzed; must be unchanged at end):
 ede47a0733203134f92c8ae46df4f5106b78a2c357fdb1d3c84301261076429f  base-wkstn-01-c-drive.E01
+## base-wkstn-05 memory (Path B — compromised host); bundled md5 bb6df5c0...c4fe0 VERIFIED
+74ff679b25727d5fb7a8f70217d6fad965efd806260b7d224f0b38bd1c436115  base-wkstn-05-memory.img
+## disk base-wkstn-05-cdrive.E01 (Path B corroboration):
+a94f2a866e2e562c58c3fbcd3a94882f2d3c3db3c66a5e5eedf16a4b1c0a65e0  base-wkstn-05-cdrive.E01

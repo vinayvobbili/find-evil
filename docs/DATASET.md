@@ -84,10 +84,33 @@ system). These are not redistributed here. Fill in at capture time:
   `Mnemosyne.sys` kernel driver = **F-Response acquisition driver** (validly signed, *Agile Risk
   Management LLC*). 1 validated Sigma hunt generated. Full trace + counts:
   `docs/ACCURACY_REPORT.md` §4 and the case file `analysis/FINDINGS_RECONCILIATION.md`.
-- **Ground truth:** not published for this host; consistent with a **baseline** (the "base-"
-  prefix). Recall vs. malice = N/A (no adversary artifacts to recall); the result is a
-  precision/anti-hallucination demonstration, reported as such.
+- **Ground truth:** this host shows no adversary activity (the `base-` prefix is the *environment*
+  name — `shieldbase.lan` — not "baseline"; sibling host `base-wkstn-05` below is compromised).
+  Recall vs. malice = N/A here; the result is a precision/anti-hallucination demonstration.
 
 > Reproducibility check **passed**: both images were re-hashed after the full analysis and the
 > SHA256s above were **unchanged** — evidence integrity verified by hash, not merely asserted.
 > Working copies were held `chmod 444`; all reads via `ewfmount` (read-only) + `icat`.
+
+### Host 2 — `base-wkstn-05` (COMPROMISED, Path B)
+
+From the bundle's "Compromised APT Attack Scenarios / SRL-2018 Compromised Enterprise Network."
+
+| Artifact | Acquisition | SHA256 (as analyzed) |
+|---|---|---|
+| `base-wkstn-05-memory.img` | raw memory (dc3dd; bundled MD5 `bb6df5c0…c4fe0` verified) | `74ff679b25727d5fb7a8f70217d6fad965efd806260b7d224f0b38bd1c436115` |
+| `base-wkstn-05-cdrive.E01` | FTK/EWF, NTFS C: (29 GiB) | `a94f2a866e2e562c58c3fbcd3a94882f2d3c3db3c66a5e5eedf16a4b1c0a65e0` |
+
+- **Host:** Windows 7 SP1 x64, `172.16.7.15` / `shieldbase.lan`, captured 2018-09-06.
+- **Tools:** Volatility3 `windows.psscan` + `netscan` (list-walk plugins fail on this image — see
+  note in §4b), raw-image `strings` carving, TSK `ewfmount`/`icat` (read-only), EvtxECmd (Sysmon +
+  PowerShell Operational). Routed through `extract_iocs` / `suggest_hunts` / `propose_blocks` /
+  `cluster_actor_infrastructure`.
+- **What the agent found:** **compromised** — `WmiPrvSE→powershell→rundll32` chain, a fileless
+  PowerShell **Empire** stager, and external C2 **`www.venetodns.trade`** egressing via the proxy
+  (so absent from `netscan` — recovered from the PowerShell command). Disk confirmed PSRemoting
+  lateral movement under stolen SQL account `shieldbase\spsql` + Empire injection IOCs. **1 C2
+  reported out of 15 candidate domains** (14 were email/defender noise); **0 fabricated** actor
+  clusters; block plan **dry-run only**. Full trace: `docs/ACCURACY_REPORT.md` §4b and
+  `analysis/wkstn05/FINDINGS_RECONCILIATION.md`.
+- **Integrity:** memory image re-hashed after analysis — **unchanged**; all reads read-only.

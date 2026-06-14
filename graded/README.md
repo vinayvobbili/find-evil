@@ -15,3 +15,11 @@ Tier 2 for the writeup.
 
 Large derived artifacts (251 MB Sysmon EVTX, 453 MB parsed CSV, 616k-line MFT bodyfile) are not
 committed; they regenerate from the evidence with the commands in FINDINGS_RECONCILIATION.md.
+
+## wkstn05/ — COMPROMISED host (Path B)
+Real evil found on `base-wkstn-05` (Win7, SRL-2018 APT scenario): WMI/PSRemoting → PowerShell
+Empire stager → rundll32, external C2 `venetodns.trade` (egressing via proxy, so absent from the
+connection table). See `FINDINGS_RECONCILIATION.md`, `01_psscan.txt` (attack chain),
+`02_netscan.txt`, `06_iocflow_extract.json` (iocflow output), `07_raw_string_hunt.txt`.
+Demonstrates: finding real evil + holding to 1-of-15 domains + 0 fabricated actor clusters.
+Large derived artifacts (163MB Sysmon EVTX, parsed CSVs) regenerate from evidence.
