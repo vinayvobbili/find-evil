@@ -45,6 +45,37 @@ kept `powershell.exe` but reclassified it as a LOLBin, **added 8 indicators the 
 missed**, and generated 14 validated hunt queries. Every finding traces to a specific tool
 call.
 
+## 🎯 Real case results — SANS evidence (`graded/`)
+
+I then ran it for real against the SANS *Example Compromised System Data* — both a clean and
+a compromised host. Memory + disk, read-only, SHA256 hashed before and after (**unchanged**).
+
+- 🦠 **`base-wkstn-05` — real evil found.** A 2018 APT scenario: `WmiPrvSE → powershell →
+  rundll32` execution chain, a **fileless PowerShell Empire** gzip-base64 stager (`H4sI…`),
+  and external C2 `www.venetodns.trade`. Disk corroborated the *how* — WinRM/PSRemoting
+  lateral movement under a stolen SQL service account (`shieldbase\spsql`), plus Empire
+  injection IOCs (CreateRemoteThread ×75, named pipes ×5,445).
+- ⟲ **The money-shot self-correction.** `netscan` showed **only internal peers** (a proxy at
+  `172.16.4.10:8080`). The eyeball read was *"no external C2 — contained."* **Wrong.** The
+  real C2 egresses *through the proxy*, so it never appears as a foreign IP in the connection
+  table — the extractor surfaced it from the **PowerShell command text** instead. The agent
+  corrected itself: *there IS external C2; the connection table alone misled me.* Genuine,
+  not staged.
+- 🧮 **False-positive discipline.** 15 suspicious external domains were present in strings;
+  only `venetodns.trade` is tied to the intrusion. The other 14 are Outlook mail-spam
+  (`*.ru`, `keto*.trade`) — **reported 1 confirmed C2, 14 unverified**, not a "15 malicious
+  domains" headline. `cluster_actor_infrastructure` returned **0 campaigns** rather than
+  fabricate an attribution, and `propose_blocks` stayed **`dry_run: true`**.
+- 🧼 **`base-wkstn-01` — clean baseline.** 0 confirmed evil, 0 retained hallucinations. Four
+  scary-looking artifacts each cleared *with a tool*: proxy egress explained, `malfind`
+  empty (refutes injection), `subject_srv.exe` = F-Response IR agent, and `Mnemosyne.sys` =
+  F-Response's **signed acquisition driver**, not a rootkit. Honesty cuts both ways: it found
+  evil where it existed and refused to invent it where it didn't.
+
+Full trace — every finding → the exact tool call — is in `graded/FINDINGS_RECONCILIATION.md`
+and `graded/wkstn05/FINDINGS_RECONCILIATION.md`; the headless log is
+`graded/graded_execution_log.jsonl`.
+
 ## 🛠️ How I built it
 
 The first hour of recon changed everything: **Protocol SIFT isn't an MCP framework — it *is*
