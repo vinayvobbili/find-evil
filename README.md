@@ -13,6 +13,9 @@ raw text and instead routes tool output through a deterministic, false-positive-
 extractor, then **reconciles its own findings against ground truth** — catching and
 correcting its hallucinations before they reach the report.
 
+📝 **Write-up:** [Teaching a Forensic Agent to Catch Its Own Hallucinations](https://vinayvobbili.github.io/posts/find-evil-self-correcting-dfir-agent/) ·
+🎬 **Demo:** [youtu.be/8ufHSoOfc5Q](https://youtu.be/8ufHSoOfc5Q)
+
 ## Architecture
 
 ![find-evil architecture](docs/architecture.png)
